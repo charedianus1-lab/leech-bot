@@ -1,0 +1,12 @@
+config.env
+cookies.txt
+accounts/
+credentials.json
+token.pickle
+__pycache__/
+*.pyc
+*.session
+*.session.lock
+__pycache__/
+log.txt
+downloads/
