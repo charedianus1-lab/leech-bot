@@ -99,9 +99,7 @@ async def stats(client, message):
 @new_task
 async def start(client, message):
     buttons = ButtonMaker()
-    buttons.ubutton(BotTheme("ST_BN1_NAME"), BotTheme("ST_BN1_URL"))
-    buttons.ubutton(BotTheme("ST_BN2_NAME"), BotTheme("ST_BN2_URL"))
-    reply_markup = buttons.build_menu(2)
+    reply_markup = None
     if len(message.command) > 1 and (store := decode_store(message.command[1])):
         chat_id, msg_id = store
         try:
