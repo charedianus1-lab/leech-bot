@@ -552,7 +552,7 @@ DISABLE_DRIVE_LINK = DISABLE_DRIVE_LINK.lower() == "true"
 
 BOT_THEME = environ.get("BOT_THEME", "")
 if len(BOT_THEME) == 0:
-    BOT_THEME = "minimal"
+    BOT_THEME = "hebrew"
 
 IMAGES = environ.get("IMAGES", "")
 IMAGES = (

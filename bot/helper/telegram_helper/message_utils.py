@@ -77,6 +77,8 @@ async def sendRich(message, text, buttons=None):
 
 
 async def sendMessage(message, text, buttons=None, photo=None, **kwargs):
+    from bot.helper.he import he
+    text = he(text)
     if isinstance(text, RichText):
         return await sendRich(message, text, buttons)
     try:
@@ -249,6 +251,8 @@ async def sendMultiMessage(chat_ids, text, buttons=None, photo=None):
 
 
 async def editMessage(message, text, buttons=None, photo=None):
+    from bot.helper.he import he
+    text = he(text)
     try:
         if isinstance(text, RichText):
             from pyrogram.types import InputRichMessage

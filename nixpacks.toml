@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python311", "gcc", "aria2", "ffmpeg", "p7zip", "rclone", "file", "file.out", "git", "curl"]
+nixPkgs = ["python311", "gcc", "aria2", "ffmpeg", "p7zip", "rclone", "file", "file.out", "git", "curl", "wkhtmltopdf"]
 
 [phases.install]
 cmds = ["python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt"]
