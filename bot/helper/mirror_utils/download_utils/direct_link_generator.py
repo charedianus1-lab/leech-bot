@@ -14,7 +14,11 @@ from lxml.etree import HTML
 from requests import Session, session as req_session, post
 from urllib.parse import parse_qs, quote, unquote, urlparse, urljoin
 from cloudscraper import create_scraper
-from lk21 import Bypass
+class Bypass:
+    def __getattr__(self, name):
+        def _unsupported(*a, **k):
+            raise DirectDownloadLinkException('ERROR: this host is not supported in this build')
+        return _unsupported
 from http.cookiejar import MozillaCookieJar
 
 from bot import LOGGER, config_dict
