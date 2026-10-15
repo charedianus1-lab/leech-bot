@@ -652,8 +652,8 @@ def help_menu(key, user_id, cmd, page=0, item=None):
         text = _ARGS[names[item]][1]
         if example := _EXAMPLES.get(names[item]):
             text += f"\n\n<b>Example:</b> <code>{example}</code>"
-        buttons.ibutton("Bᴀᴄᴋ", f"{base} p {page}")
-        buttons.ibutton("Cʟᴏsᴇ", f"wzmlx {user_id} close")
+        buttons.ibutton("חזרה", f"{base} p {page}")
+        buttons.ibutton("סגירה", f"wzmlx {user_id} close")
         return text.replace("/cmd", f"/{cmd}"), buttons.build_menu(2)
     per_page = 8
     pages = max(1, -(-len(names) // per_page))
@@ -666,5 +666,14 @@ def help_menu(key, user_id, cmd, page=0, item=None):
         buttons.ibutton(f"{page + 1}/{pages}", f"{base} p {page}", "l_body")
         if page < pages - 1:
             buttons.ibutton("⫸", f"{base} p {page + 1}", "l_body")
-    buttons.ibutton("Cʟᴏsᴇ", f"wzmlx {user_id} close", "footer")
+    buttons.ibutton("סגירה", f"wzmlx {user_id} close", "footer")
     return _MAIN[mtype].replace("/cmd", f"/{cmd}"), buttons.build_menu(2, lb_cols=3)
+
+
+# Hebrew overrides
+from bot.helper.ext_utils.help_he import (  # noqa: E402
+    help_string,
+    PASSWORD_ERROR_MESSAGE,
+    _ARGS,
+    _MAIN,
+)
