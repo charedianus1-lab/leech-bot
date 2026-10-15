@@ -642,18 +642,18 @@ async def wzmlxcb(_, query):
             await editMessage(message, help_string[3], btn.build_menu(2))
         elif data[3] == "admin":
             if not await CustomFilters.sudo("", query):
-                return await query.answer("Not Sudo or Owner!", show_alert=True)
+                return await query.answer("רק בעלים או סודו!", show_alert=True)
             await editMessage(message, help_string[2], btn.build_menu(2))
         else:
             buttons = ButtonMaker()
-            buttons.ibutton("Basic", f"wzmlx {user_id} guide basic")
-            buttons.ibutton("Users", f"wzmlx {user_id} guide users")
-            buttons.ibutton("Mics", f"wzmlx {user_id} guide miscs")
-            buttons.ibutton("Owner & Sudos", f"wzmlx {user_id} guide admin")
+            buttons.ibutton("בסיסי", f"wzmlx {user_id} guide basic")
+            buttons.ibutton("משתמשים", f"wzmlx {user_id} guide users")
+            buttons.ibutton("שונות", f"wzmlx {user_id} guide miscs")
+            buttons.ibutton("בעלים וסודו", f"wzmlx {user_id} guide admin")
             buttons.ibutton("❌", f"wzmlx {user_id} close")
             await editMessage(
                 message,
-                "㊂ <b><i>Help Guide Menu!</i></b>\n\n<b>NOTE: <i>Click on any CMD to see more minor detalis.</i></b>",
+                "㊂ <b><i>מדריך פקודות</i></b>\n\n<b>לחץ על קטגוריה כדי לראות את הפקודות.</b>",
                 buttons.build_menu(2),
             )
         await query.answer()
