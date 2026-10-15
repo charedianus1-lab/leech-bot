@@ -631,31 +631,22 @@ async def wzmlxcb(_, query):
             text, markup = help_menu(key, user_id, cmd, page)
         await editMessage(message, text, markup)
     elif data[2] == "guide":
-        btn = ButtonMaker()
-        btn.ibutton("◀️", f"wzmlx {user_id} guide home")
-        btn.ibutton("❌", f"wzmlx {user_id} close")
-        if data[3] == "basic":
-            await editMessage(message, help_string[0], btn.build_menu(2))
-        elif data[3] == "users":
-            await editMessage(message, help_string[1], btn.build_menu(2))
-        elif data[3] == "miscs":
-            await editMessage(message, help_string[3], btn.build_menu(2))
-        elif data[3] == "admin":
-            if not await CustomFilters.sudo("", query):
+        from bot.helper.ext_utils.help_he import GUIDE, GUIDE_HOME
+
+        pages = {k: t for k, _, t in GUIDE}
+        if len(data) > 3 and data[3] in pages:
+            if data[3] == "admin" and not await CustomFilters.sudo("", query):
                 return await query.answer("רק בעלים או סודו!", show_alert=True)
-            await editMessage(message, help_string[2], btn.build_menu(2))
+            btn = ButtonMaker()
+            btn.ibutton("◀️", f"wzmlx {user_id} guide home")
+            btn.ibutton("❌", f"wzmlx {user_id} close")
+            await editMessage(message, pages[data[3]], btn.build_menu(2))
         else:
             buttons = ButtonMaker()
-            buttons.ibutton("בסיסי", f"wzmlx {user_id} guide basic")
-            buttons.ibutton("משתמשים", f"wzmlx {user_id} guide users")
-            buttons.ibutton("שונות", f"wzmlx {user_id} guide miscs")
-            buttons.ibutton("בעלים וסודו", f"wzmlx {user_id} guide admin")
+            for k, label, _ in GUIDE:
+                buttons.ibutton(label, f"wzmlx {user_id} guide {k}")
             buttons.ibutton("❌", f"wzmlx {user_id} close")
-            await editMessage(
-                message,
-                "㊂ <b><i>מדריך פקודות</i></b>\n\n<b>לחץ על קטגוריה כדי לראות את הפקודות.</b>",
-                buttons.build_menu(2),
-            )
+            await editMessage(message, GUIDE_HOME, buttons.build_menu(2))
         await query.answer()
     elif data[2] == "stats":
         msg, btn = await get_stats(query, data[3])

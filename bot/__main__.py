@@ -255,12 +255,12 @@ async def search_images():
 async def bot_help(client, message):
     buttons = ButtonMaker()
     user_id = message.from_user.id
-    buttons.ibutton(BotTheme("BASIC_BT"), f"wzmlx {user_id} guide basic")
-    buttons.ibutton(BotTheme("USER_BT"), f"wzmlx {user_id} guide users")
-    buttons.ibutton(BotTheme("MICS_BT"), f"wzmlx {user_id} guide miscs")
-    buttons.ibutton(BotTheme("O_S_BT"), f"wzmlx {user_id} guide admin")
+    from bot.helper.ext_utils.help_he import GUIDE, GUIDE_HOME
+
+    for k, label, _ in GUIDE:
+        buttons.ibutton(label, f"wzmlx {user_id} guide {k}")
     buttons.ibutton(BotTheme("CLOSE_BT"), f"wzmlx {user_id} close")
-    await sendMessage(message, BotTheme("HELP_HEADER"), buttons.build_menu(2))
+    await sendMessage(message, GUIDE_HOME, buttons.build_menu(2))
 
 
 async def restart_notification():

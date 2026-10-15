@@ -322,3 +322,118 @@ _MAIN = {
 ➲ תגובה לקישור עם <code>/cmd</code></blockquote>
 {_TAP}""",
 }
+
+
+# ---- New help guide: grouped, plain Hebrew ----
+_G_DL = f'''⌬ <b><i>הורדות</i></b>
+
+<blockquote><b>הורדה לטלגרם:</b>
+╭ /{B.LeechCommand[0]} או /{B.LeechCommand[1]}: מוריד קישור או קובץ ושולח לכאן. אפשר גם בתגובה להודעה עם קישור.
+╰ /{B.YtdlLeechCommand[0]} או /{B.YtdlLeechCommand[1]}: הורדה מיוטיוב ומאתרים נוספים. בוחרים איכות בכפתורים, ויש גם כפתור MP3 לשמע בלבד. פלייליסט מוריד עד 20 פריטים.
+
+<b>הורדה לענן:</b>
+╭ /{B.MirrorCommand[0]} או /{B.MirrorCommand[1]}: מוריד קישור או קובץ ומעלה לדרייב או לענן.
+┊ /{B.YtdlCommand[0]} או /{B.YtdlCommand[1]}: כמו למעלה, עם yt-dlp.
+╰ /{B.CategorySelect}: בחירת קטגוריה להעלאה לדרייב.
+
+<b>ניהול משימות:</b>
+╭ /{B.StatusCommand[0]} או /{B.StatusCommand[1]}: כל המשימות הפעילות. אפשר להוסיף <code>me</code> כדי לראות רק את שלך.
+╰ /{B.CancelMirror}: ביטול משימה לפי מזהה, או בתגובה להודעה של המשימה.
+
+<b>כמה דברים שאפשר להוסיף אחרי הקישור:</b>
+╭ <code>-n שם</code> לשינוי שם הקובץ
+┊ <code>-z</code> לדחיסה, <code>-e</code> לחילוץ
+┊ <code>-ea mp3</code> להוצאת שמע מסרטון
+╰ <code>-i 5</code> כמה קישורים ברצף, <code>-b</code> רשימת קישורים</blockquote>
+<i>הורדות רבות בו זמנית מחכות בתור ורצות לפי הסדר. פירוט של כל ארגומנט: שלח /leech בלי קישור ותקבל כפתורים.</i>'''
+
+_G_WEB = f'''⌬ <b><i>דפי אינטרנט</i></b>
+
+<blockquote><b>שמירת דף מהרשת:</b>
+╰ /web קישור: מביא דף אינטרנט. בוחרים בכפתורים בין טקסט, PDF או צילום מסך.
+
+צילום המסך נעשה דרך archive.li ומצורף אליו קישור קבוע. אם האתר הזה לא זמין, הבוט מצלם בעצמו.
+
+<b>דוגמה:</b>
+<code>/web https://example.com</code></blockquote>'''
+
+_G_DRIVE = f'''⌬ <b><i>גוגל דרייב</i></b>
+
+<blockquote><b>עבודה עם קבצים בדרייב:</b>
+╭ /{B.CloneCommand[0]} או /{B.CloneCommand[1]} קישור: מעתיק קובץ או תיקייה בדרייב בלי להוריד.
+┊ /{B.CountCommand} קישור: סופר קבצים ותיקיות בדרייב.
+┊ /{B.ListCommand} חיפוש: מחפש קבצים בדרייב.
+╰ /{B.DeleteCommand} קישור: מוחק קובץ או תיקייה מהדרייב (בעלים וסודו בלבד).
+
+<b>ניקוי (בעלים בלבד):</b>
+╰ /{B.GDCleanCommand[0]} או /{B.GDCleanCommand[1]} מזהה_תיקייה: מוחק את כל הקבצים בתיקייה.</blockquote>'''
+
+_G_SET = f'''⌬ <b><i>הגדרות ומצב</i></b>
+
+<blockquote><b>ההגדרות שלי:</b>
+╭ /{B.UserSetCommand[0]} או /{B.UserSetCommand[1]}: ההגדרות האישיות (תמונה ממוזערת, כיתוב, יעדים ועוד).
+┊ /{B.CoverCommand}: בתגובה לסרטון, קובע תמונה כשער שלו.
+╰ /{B.LoginCommand}: התחברות לבוט בלי סיסמה זמנית (בפרטי).
+
+<b>מצב הבוט:</b>
+╭ /{B.StatsCommand[0]} או /{B.StatsCommand[1]}: נתוני השרת: זיכרון, דיסק וזמן פעילות.
+┊ /{B.PingCommand[0]} או /{B.PingCommand[1]}: בדיקת זמן תגובה.
+╰ /{B.SpeedCommand[0]} או /{B.SpeedCommand[1]}: בדיקת מהירות האינטרנט של השרת.
+
+<b>כללי:</b>
+╭ /start: הודעת פתיחה.
+╰ /{B.HelpCommand}: התפריט הזה.</blockquote>'''
+
+_G_INFO = f'''⌬ <b><i>חיפוש ומידע</i></b>
+
+<blockquote><b>קבצים:</b>
+╰ /{B.MediaInfoCommand[0]} או /{B.MediaInfoCommand[1]} קישור או קובץ: פרטי מדיה (קודק, רזולוציה, שפות).
+
+<b>סרטים וסדרות:</b>
+╭ /{B.IMDBCommand} שם: חיפוש ב-IMDB.
+╰ /{B.MyDramaListCommand} שם: חיפוש ב-MyDramaList.
+
+<b>אנימה:</b>
+╭ /{B.AniListCommand} שם: חיפוש אנימה ב-AniList.
+┊ /character שם: חיפוש דמות.
+┊ /manga שם: חיפוש מנגה.
+╰ /{B.AnimeHelpCommand}: הסבר על פקודות האנימה.</blockquote>'''
+
+_G_ADMIN = f'''⌬ <b><i>ניהול (בעלים וסודו)</i></b>
+
+<blockquote><b>הגדרות והרשאות:</b>
+╭ /{B.BotSetCommand[0]} או /{B.BotSetCommand[1]}: הגדרות הבוט.
+┊ /{B.UsersCommand}: רשימת משתמשים ונתונים.
+┊ /{B.AuthorizeCommand[0]} או /{B.AuthorizeCommand[1]}: מתן הרשאה לצ'אט או משתמש.
+┊ /{B.UnAuthorizeCommand[0]} או /{B.UnAuthorizeCommand[1]}: ביטול הרשאה.
+┊ /{B.AddSudoCommand} ו-/{B.RmSudoCommand}: הוספה והסרה של סודו (בעלים בלבד).
+┊ /{B.AddBlackListCommand[0]} או /{B.AddBlackListCommand[1]}: חסימת משתמש.
+╰ /{B.RmBlackListCommand[0]} או /{B.RmBlackListCommand[1]}: ביטול חסימה.
+
+<b>הודעות ותמונות:</b>
+╭ /{B.BroadcastCommand[0]} או /{B.BroadcastCommand[1]}: בתגובה להודעה, שולח אותה לכל מי שהפעיל את הבוט בפרטי.
+┊ /{B.AddImageCommand}: הוספת תמונות לבוט.
+╰ /{B.ImagesCommand}: הצגת התמונות השמורות.
+
+<b>תחזוקה:</b>
+╭ /{B.RestartCommand[0]} או /{B.RestartCommand[1]}: הפעלה מחדש ועדכון.
+┊ /{B.RestartCommand[2]}: הפעלה מחדש של כל הבוטים.
+┊ /{B.LogCommand}: קובץ הלוג של הבוט.
+┊ /{B.CancelAllCommand[0]}: ביטול כל המשימות. /{B.CancelAllCommand[1]} לכמה בוטים.
+╰ /{B.RssCommand}: תפריט RSS (כבוי כרגע, אין ערוץ מוגדר).
+
+<b>למתקדמים (בעלים בלבד):</b>
+╭ /{B.ShellCommand}: הרצת פקודת מעטפת.
+┊ /{B.EvalCommand} ו-/{B.ExecCommand}: הרצת קוד פייתון.
+┊ /{B.ClearLocalsCommand}: ניקוי משתני eval ו-exec.
+╰ /exportsession: יצירת StringSession (בפרטי).</blockquote>'''
+
+GUIDE = [
+    ("dl", "הורדות", _G_DL),
+    ("web", "דפי אינטרנט", _G_WEB),
+    ("drive", "דרייב", _G_DRIVE),
+    ("set", "הגדרות ומצב", _G_SET),
+    ("info", "חיפוש ומידע", _G_INFO),
+    ("admin", "ניהול", _G_ADMIN),
+]
+GUIDE_HOME = "㊂ <b><i>תפריט עזרה</i></b>\n\nבחר קטגוריה כדי לראות את הפקודות."
