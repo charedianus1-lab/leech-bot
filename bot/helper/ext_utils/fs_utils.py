@@ -5,7 +5,10 @@ from aioshutil import rmtree as aiormtree, move
 from asyncio import create_subprocess_exec
 from asyncio.subprocess import PIPE
 from shutil import rmtree, disk_usage
-from magic import Magic
+try:
+    from magic import Magic
+except Exception:  # libmagic missing (e.g. bare Python host) - mime falls back
+    Magic = None
 from re import split as re_split, I, search as re_search
 from subprocess import run as srun
 from sys import exit as sexit
@@ -174,6 +177,8 @@ def get_base_name(orig_path):
 
 
 def get_mime_type(file_path):
+    if Magic is None:
+        return "application/octet-stream"
     mime = Magic(mime=True)
     mime_type = mime.from_file(file_path)
     mime_type = mime_type or "text/plain"
