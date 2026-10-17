@@ -57,37 +57,13 @@ from .helper.telegram_helper.message_utils import (
 from .helper.telegram_helper.filters import CustomFilters
 from .helper.ext_utils.user_tools import decode_store
 from .helper.telegram_helper.button_build import ButtonMaker, make_button
-from .helper.listeners.aria2_listener import start_aria2_listener
 from .helper.themes import BotTheme
 from .modules import (
     authorize,
-    clone,
-    gd_count,
-    gd_delete,
-    gd_list,
-    cancel_mirror,
-    mirror_leech,
-    status,
-    torrent_search,
-    torrent_select,
-    ytdlp,
-    rss,
     shell,
     eval,
     users_settings,
-    bot_settings,
-    speedtest,
-    save_msg,
-    images,
-    imdb,
-    anilist,
-    mediainfo,
-    mydramalist,
-    gen_pyro_sess,
-    gd_clean,
-    broadcast,
-    category_select,
-    webpage,
+    yemot,
 )
 
 
@@ -387,21 +363,98 @@ async def log_check():
                 LOGGER.error(f"Not Connected Chat ID : {chat_id}, ERROR: {e}")
 
 
+async def wzmlx_callback(_, query):
+    from html import escape
+    from bot.helper.ext_utils.help_he import GUIDE, GUIDE_HOME
+
+    data = query.data.split()
+    if len(data) < 3:
+        await query.answer()
+        return
+    user_id = int(data[1])
+    if query.from_user.id != user_id and not await CustomFilters.sudo("", query):
+        await query.answer("Not Yours!", show_alert=True)
+        return
+    message = query.message
+    if data[2] == "close":
+        await query.answer()
+        await deleteMessage(message)
+    elif data[2] == "logdisplay":
+        await query.answer()
+        try:
+            async with aiopen("log.txt", "r") as f:
+                lines = (await f.read()).splitlines()
+            Loglines = "\n".join(lines[-20:])
+            startLine = "----------<b>START LOG</b>----------\n"
+            endLine = "\n----------<b>END LOG</b>----------"
+            btn = ButtonMaker()
+            btn.ibutton("Close", f"wzmlx {user_id} close")
+            await sendMessage(message, startLine + escape(Loglines) + endLine, btn.build_menu(1))
+            await editReplyMarkup(message, None)
+        except Exception as err:
+            LOGGER.error(f"TG Log Display : {str(err)}")
+    elif data[2] == "webpaste":
+        await query.answer()
+        from aiohttp import ClientSession, FormData
+        PASTE_API = "https://tjfiles.tjbots.chatgpt.site/api/"
+        async with aiopen("log.txt", "r") as f:
+            logFile = await f.read()
+        paste_url = None
+        for content in (logFile, logFile[-1_000_000:], logFile[-200_000:]):
+            try:
+                fd = FormData()
+                fd.add_field("content", content)
+                async with ClientSession() as session:
+                    async with session.post(PASTE_API, data=fd, timeout=60) as resp:
+                        res = await resp.json(content_type=None)
+                if resp.status in (200, 201) and (pid := (res.get("payload") or {}).get("id")):
+                    paste_url = f"{PASTE_API.removesuffix('api/')}{pid}"
+                    break
+                LOGGER.error(f"Web Paste Failed: {resp.status} {res.get('error')}")
+            except Exception as err:
+                LOGGER.error(f"Web Paste Error: {str(err)}")
+        if paste_url:
+            btn = ButtonMaker()
+            btn.ubutton("📨 Web Paste", paste_url)
+            await editReplyMarkup(message, btn.build_menu(1))
+        else:
+            await query.answer("Web Paste Failed! Check logs.", show_alert=True)
+    elif data[2] == "botpm":
+        await query.answer(url=f"https://t.me/{bot_name}?start=wzmlx")
+    elif data[2] == "guide":
+        pages = {k: t for k, _, t in GUIDE}
+        if len(data) > 3 and data[3] in pages:
+            if data[3] == "admin" and not await CustomFilters.sudo("", query):
+                return await query.answer("רק בעלים או סודו!", show_alert=True)
+            btn = ButtonMaker()
+            btn.ibutton("◀️", f"wzmlx {user_id} guide home")
+            btn.ibutton("❌", f"wzmlx {user_id} close")
+            await editMessage(message, pages[data[3]], btn.build_menu(2))
+        else:
+            buttons = ButtonMaker()
+            for k, label, _ in GUIDE:
+                buttons.ibutton(label, f"wzmlx {user_id} guide {k}")
+            buttons.ibutton("❌", f"wzmlx {user_id} close")
+            await editMessage(message, GUIDE_HOME, buttons.build_menu(2))
+        await query.answer()
+    else:
+        await query.answer()
+
+
 async def main():
     await gather(
         start_cleanup(),
-        torrent_search.initiate_search_tools(),
         restart_notification(),
         search_images(),
         set_commands(bot),
         log_check(),
     )
-    await sync_to_async(start_aria2_listener, wait=False)
 
     bot.add_handler(
         MessageHandler(start, filters=command(BotCommands.StartCommand) & private)
     )
     bot.add_handler(CallbackQueryHandler(token_callback, filters=regex(r"^pass")))
+    bot.add_handler(CallbackQueryHandler(wzmlx_callback, filters=regex(r"^wzmlx")))
     bot.add_handler(
         MessageHandler(login, filters=command(BotCommands.LoginCommand) & private)
     )
@@ -427,14 +480,6 @@ async def main():
         MessageHandler(
             bot_help,
             filters=command(BotCommands.HelpCommand)
-            & CustomFilters.authorized
-            & ~CustomFilters.blacklisted,
-        )
-    )
-    bot.add_handler(
-        MessageHandler(
-            stats,
-            filters=command(BotCommands.StatsCommand)
             & CustomFilters.authorized
             & ~CustomFilters.blacklisted,
         )

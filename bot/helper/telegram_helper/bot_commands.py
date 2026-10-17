@@ -90,5 +90,21 @@ class _BotCommands:
         self.BroadcastCommand = [f"broadcast{CMD_SUFFIX}", f"bc{CMD_SUFFIX}"]
         self.CoverCommand = f"cover{CMD_SUFFIX}"
 
+        # Yemot (ימות המשיח) management commands
+        self.YemotCommand = [f"yemot{CMD_SUFFIX}", f"ym{CMD_SUFFIX}"]
+        self.YmStatCommand = f"ymstat{CMD_SUFFIX}"
+        self.YmCallsCommand = f"ymcalls{CMD_SUFFIX}"
+        self.YmFilesCommand = f"ymfiles{CMD_SUFFIX}"
+        self.YmTxtCommand = f"ymtxt{CMD_SUFFIX}"
+        self.YmDlCommand = f"ymdl{CMD_SUFFIX}"
+        self.YmUpCommand = f"ymup{CMD_SUFFIX}"
+        self.YmWriteCommand = f"ymwrite{CMD_SUFFIX}"
+        self.YmDelCommand = f"ymdel{CMD_SUFFIX}"
+        self.YmExtCommand = f"ymext{CMD_SUFFIX}"
+        self.YmSetCommand = f"ymset{CMD_SUFFIX}"
+        self.YmSmsCommand = f"ymsms{CMD_SUFFIX}"
+        self.YmTzCommand = f"ymtz{CMD_SUFFIX}"
+        self.YmCampCommand = f"ymcamp{CMD_SUFFIX}"
+
 
 BotCommands = _BotCommands()
