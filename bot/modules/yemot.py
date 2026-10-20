@@ -3,6 +3,8 @@
 # Destructive/outbound actions require in-chat confirmation (buttons).
 from os import environ
 from time import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from uuid import uuid4
 from io import BytesIO
 from html import escape
@@ -168,6 +170,21 @@ CMDS_TXT = (
 )
 
 
+_STAT_LABELS = {
+    "calls": "סה״כ שיחות שטופלו",
+    "errors": "שגיאות",
+    "turns": "תורות שיחה (שאלה ותשובה)",
+    "started": "השרת רץ מאז",
+}
+
+
+def _fmt_started(v):
+    try:
+        return datetime.fromtimestamp(float(v), ZoneInfo("Asia/Jerusalem")).strftime("%d.%m.%Y %H:%M")
+    except Exception:
+        return str(v)
+
+
 async def _do_stat():
     out = ["📊 <b>סטטוס הקו</b>"]
     try:
@@ -175,10 +192,15 @@ async def _do_stat():
             async with s.get(f"{YM_BRIDGE}/status") as r:
                 b = await r.json(content_type=None)
         st = b.get("stats") or {}
-        out.append(f"🟢 השרת פעיל · שיחות פעילות: <b>{b.get('active_calls', 0)}</b>")
-        parts = [f"{escape(str(k))}: <code>{escape(str(v))}</code>" for k, v in st.items()]
+        out.append(f"🟢 השרת פעיל · שיחות פעילות לפי הגשר: <b>{b.get('active_calls', 0)}</b>")
+        parts = []
+        for k, v in st.items():
+            label = _STAT_LABELS.get(k, str(k))
+            val = _fmt_started(v) if k == "started" else str(v)
+            parts.append(f"{escape(label)}: <code>{escape(val)}</code>")
         if parts:
             out.append("<blockquote>" + "\n".join(parts) + "</blockquote>")
+        out.append("<i>שיחות פעילות בפועל בקו עצמו: /ymcalls</i>")
     except Exception as e:
         out.append(f"🔴 השרת לא עונה: {escape(str(e)[:150])}")
     return "\n".join(out)
