@@ -1002,6 +1002,17 @@ async def set_commands(client):
             BotCommand(BotCommands.YmSmsCommand, "שליחת SMS מהקו (עם אישור)"),
             BotCommand(BotCommands.YmTzCommand, "שליחת צינתוק (עם אישור)"),
             BotCommand(BotCommands.YmCampCommand, "תבניות קמפיין"),
+            BotCommand(BotCommands.HebDateCommand, "תאריך עברי והמרה"),
+            BotCommand(BotCommands.ShabbatCommand, "זמני שבת ופרשה"),
+            BotCommand(BotCommands.SefariaCommand, "פתיחת מקור בספריא"),
+            BotCommand(BotCommands.CalcCommand, "מחשבון"),
+            BotCommand(BotCommands.WeatherCommand, "מזג אוויר"),
+            BotCommand(BotCommands.QrCommand, "יצירת קוד QR"),
+            BotCommand(BotCommands.RemindCommand, "קביעת תזכורת"),
+            BotCommand(BotCommands.TasksCommand, "רשימת משימות"),
+            BotCommand(BotCommands.NotesCommand, "פתקים"),
+            BotCommand(BotCommands.RssCommand, "חדשות ועדכוני RSS"),
+            BotCommand(BotCommands.MyStateCommand, "מצב השמירה והבוט"),
             BotCommand(BotCommands.HelpCommand, "עזרה מלאה בעברית"),
         ]
         await client.set_bot_commands(bot_cmds)

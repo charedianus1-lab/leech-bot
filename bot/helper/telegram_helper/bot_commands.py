@@ -106,5 +106,24 @@ class _BotCommands:
         self.YmTzCommand = f"ymtz{CMD_SUFFIX}"
         self.YmCampCommand = f"ymcamp{CMD_SUFFIX}"
 
+        # Personal extras (calendar, tools, reminders, RSS)
+        self.HebDateCommand = f"hebdate{CMD_SUFFIX}"
+        self.ShabbatCommand = f"shabbat{CMD_SUFFIX}"
+        self.SefariaCommand = f"sefaria{CMD_SUFFIX}"
+        self.CalcCommand = f"calc{CMD_SUFFIX}"
+        self.WeatherCommand = f"weather{CMD_SUFFIX}"
+        self.QrCommand = f"qr{CMD_SUFFIX}"
+        self.NoteCommand = f"note{CMD_SUFFIX}"
+        self.NotesCommand = f"notes{CMD_SUFFIX}"
+        self.NoteDelCommand = f"notedel{CMD_SUFFIX}"
+        self.TaskCommand = f"task{CMD_SUFFIX}"
+        self.TasksCommand = f"tasks{CMD_SUFFIX}"
+        self.DoneCommand = f"done{CMD_SUFFIX}"
+        self.TaskDelCommand = f"taskdel{CMD_SUFFIX}"
+        self.RemindCommand = f"remind{CMD_SUFFIX}"
+        self.RemindersCommand = f"reminders{CMD_SUFFIX}"
+        self.RemindDelCommand = f"remdel{CMD_SUFFIX}"
+        self.MyStateCommand = f"mystate{CMD_SUFFIX}"
+
 
 BotCommands = _BotCommands()

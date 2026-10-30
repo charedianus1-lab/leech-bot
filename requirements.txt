@@ -42,3 +42,4 @@ pytz
 speedtest-cli
 readability-lxml
 weasyprint
+qrcode

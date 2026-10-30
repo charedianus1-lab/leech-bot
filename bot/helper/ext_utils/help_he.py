@@ -38,11 +38,49 @@ _G_ADMIN = f'''⌬ <b><i>ניהול הבוט (בעלים וסודו)</i></b>
 ┊ /{B.UserSetCommand[0]} או /{B.UserSetCommand[1]}: הגדרות אישיות.
 ╰ /{B.ShellCommand}: הרצת פקודת מעטפת בשרת (בעלים בלבד).</blockquote>'''
 
+
+_G_HEB = f'''⌬ <b><i>לוח עברי ולימוד</i></b>
+
+<blockquote>╭ /{B.HebDateCommand} [תאריך]: התאריך העברי של היום, או המרה של תאריך לועזי (למשל /{B.HebDateCommand} 30/10/2026).
+┊ /{B.ShabbatCommand} [עיר]: פרשת השבוע, הדלקת נרות והבדלה לפי עיר. שליחה עם שם עיר שומרת אותה כברירת מחדל.
+╰ /{B.SefariaCommand} &lt;מראה מקום&gt;: פתיחת מקור בספריא, למשל <code>/{B.SefariaCommand} תהילים כג</code>.</blockquote>'''
+
+_G_TOOLS = f'''⌬ <b><i>כלים קטנים</i></b>
+
+<blockquote>╭ /{B.CalcCommand} &lt;ביטוי&gt;: מחשבון, למשל <code>/{B.CalcCommand} 2+3*4</code>.
+┊ /{B.WeatherCommand} [עיר]: מזג אוויר עכשיו ותחזית להיום.
+╰ /{B.QrCommand} &lt;טקסט&gt;: יצירת קוד QR.</blockquote>'''
+
+_G_REM = f'''⌬ <b><i>תזכורות, משימות ופתקים</i></b>
+
+<blockquote>╭ /{B.RemindCommand} בעוד 30 דקות לקנות חלב - דוגמאות זמן: "בעוד 2 שעות", "18:30", "מחר 08:00", "15/11 09:00".
+┊ /{B.RemindersCommand}: תזכורות פעילות. ביטול: /{B.RemindDelCommand} &lt;מספר&gt;.
+┊ /{B.TaskCommand} &lt;משימה&gt;: הוספה. /{B.TasksCommand}: רשימה. /{B.DoneCommand} &lt;מספר&gt;: סימון שבוצע. /{B.TaskDelCommand} &lt;מספר&gt;: מחיקה באישור.
+┊ /{B.NoteCommand} &lt;פתק&gt;: שמירה. /{B.NotesCommand}: רשימה. /{B.NoteDelCommand} &lt;מספר&gt;: מחיקה באישור.
+╰ התזכורות נשמרות ב-Drive של הבוט ונשלחות כשהשרת פעיל; אחרי אתחול תקבל אותן מיד עם החזרה לאוויר.</blockquote>'''
+
+_G_RSS = f'''⌬ <b><i>חדשות ועדכוני RSS</i></b>
+
+<blockquote>╭ /{B.RssCommand} add &lt;קישור לפיד&gt; [שם]: הרשמה לעדכונים מאתר.
+┊ /{B.RssCommand}: רשימת הפידים הרשומים.
+┊ /{B.RssCommand} now &lt;מספר&gt;: 5 הפריטים האחרונים מהפיד.
+╰ /{B.RssCommand} del &lt;מספר&gt;: הסרת פיד (באישור). בדיקה פעם בשעה; פריטים חדשים נשלחים לפרטי.</blockquote>'''
+
+_G_STATE = f'''⌬ <b><i>מצב ושמירה</i></b>
+
+<blockquote>╭ /{B.MyStateCommand}: איפה נשמרים הנתונים (חשבון ה-Drive), ספירת פתקים/משימות/תזכורות/פידים, ומצב המתזמן.
+╰ הנתונים האישיים נשמרים בקובץ JSON בדרייב שאליו הבוט כבר מעלה, לא בשרת הזמני.</blockquote>'''
+
 GUIDE = [
-    ("ym", "סטטוס ושיחות", _G_YM),
+    ("heb", "לוח עברי", _G_HEB),
+    ("rem", "תזכורות", _G_REM),
+    ("rss", "חדשות RSS", _G_RSS),
+    ("tools", "כלים", _G_TOOLS),
+    ("state", "מצב ושמירה", _G_STATE),
+    ("ym", "ימות: סטטוס", _G_YM),
     ("files", "קבצים", _G_FILES),
     ("ext", "שלוחות", _G_EXT),
     ("msg", "הודעות", _G_MSG),
     ("admin", "ניהול", _G_ADMIN),
 ]
-GUIDE_HOME = "㊂ <b><i>ניהול ימות המשיח</i></b>\n\nבחר קטגוריה כדי לראות את הפקודות. מחיקות ושינויים מבקשים אישור לפני ביצוע."
+GUIDE_HOME = "㊂ <b><i>ימות המשיח וכלים אישיים</i></b>\n\nבחר קטגוריה כדי לראות את הפקודות. מחיקות ושינויים מבקשים אישור לפני ביצוע."

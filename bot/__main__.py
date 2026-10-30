@@ -64,6 +64,7 @@ from .modules import (
     eval,
     users_settings,
     yemot,
+    extras,
 )
 
 
@@ -449,6 +450,7 @@ async def main():
         set_commands(bot),
         log_check(),
     )
+    await extras.start_extras()
 
     bot.add_handler(
         MessageHandler(start, filters=command(BotCommands.StartCommand) & private)
