@@ -124,11 +124,15 @@ async def hebdate_cmd(client, message):
             gy, gm, gd = int(m2[1]), int(m2[2]), int(m2[3])
         else:
             return await sendMessage(message, "פורמט: /hebdate או /hebdate 30/10/2026")
+    await sendMessage(message, await _hebdate_text(gy, gm, gd))
+
+
+async def _hebdate_text(gy, gm, gd):
     try:
         j = await _json("https://www.hebcal.com/converter",
                         {"cfg": "json", "gy": gy, "gm": gm, "gd": gd, "g2h": 1, "lg": "h"})
     except Exception as e:
-        return await sendMessage(message, f"⚠️ שגיאה בחיבור ל-Hebcal: {escape(str(e)[:120])}")
+        return f"⚠️ שגיאה בחיבור ל-Hebcal: {escape(str(e)[:120])}"
     heb = j.get("hebrew") or "?"
     d = datetime(gy, gm, gd)
     wd = _WEEKDAYS[d.weekday()]
@@ -137,7 +141,7 @@ async def hebdate_cmd(client, message):
     events = [e for e in (j.get("events") or []) if isinstance(e, str)]
     if events:
         out.append("🎉 " + ", ".join(escape(e) for e in events))
-    await sendMessage(message, "\n".join(out))
+    return "\n".join(out)
 
 
 async def shabbat_cmd(client, message):
@@ -154,12 +158,16 @@ async def shabbat_cmd(client, message):
         await drive_state.put("shabbat_city", geo)
     else:
         geo = await drive_state.get("shabbat_city", _DEFAULT_CITY)
+    await sendMessage(message, await _shabbat_text(geo))
+
+
+async def _shabbat_text(geo):
     city_name = next((k for k, v in _CITIES.items() if v == geo), "ירושלים")
     try:
         j = await _json("https://www.hebcal.com/shabbat",
                         {"cfg": "json", "geonameid": geo, "M": "on", "lg": "h", "b": 18})
     except Exception as e:
-        return await sendMessage(message, f"⚠️ שגיאה בחיבור ל-Hebcal: {escape(str(e)[:120])}")
+        return f"⚠️ שגיאה בחיבור ל-Hebcal: {escape(str(e)[:120])}"
     parasha, candles, havdalah = None, None, None
     for it in j.get("items") or []:
         cat = it.get("category")
@@ -179,7 +187,7 @@ async def shabbat_cmd(client, message):
     if len(out) == 1:
         out.append("לא נמצאו נתוני שבת לשבוע הקרוב.")
     out.append("<i>מקור: Hebcal. לשינוי עיר: /shabbat ושם העיר (נשמר כברירת מחדל).</i>")
-    await sendMessage(message, "\n".join(out))
+    return "\n".join(out)
 
 
 def _strip_html(t):
@@ -389,15 +397,19 @@ def _task_lines(tasks, show_done=False):
 
 
 async def tasks_cmd(client, message):
+    await sendMessage(message, await _tasks_text())
+
+
+async def _tasks_text():
     tasks = await drive_state.get("tasks", [])
     open_count = sum(1 for t in tasks if not t.get("done"))
     if open_count == 0:
         extra = f" (ושהושלמו {len(tasks)})" if tasks else ""
-        return await sendMessage(message, f"אין משימות פתוחות{extra}. /task להוספה.")
+        return f"אין משימות פתוחות{extra}. /task להוספה."
     lines, _ = _task_lines(tasks)
     out = ["📋 <b>משימות פתוחות:</b>"] + lines
     out.append("סיום: /done <מספר> · מחיקה: /taskdel <מספר>")
-    await sendMessage(message, "\n".join(out))
+    return "\n".join(out)
 
 
 async def done_cmd(client, message):
@@ -525,17 +537,21 @@ async def remind_cmd(client, message):
 
 
 async def reminders_cmd(client, message):
+    await sendMessage(message, await _reminders_text())
+
+
+async def _reminders_text():
     rems = await drive_state.get("reminders", [])
     now = int(time())
     pending = [(i, r) for i, r in enumerate(rems, 1) if r["due"] > now]
     if not pending:
-        return await sendMessage(message, "אין תזכורות פעילות. /remind לקביעה.")
+        return "אין תזכורות פעילות. /remind לקביעה."
     lines = ["⏰ <b>תזכורות פעילות:</b>"]
     for i, r in pending[:30]:
         due = datetime.fromtimestamp(r["due"], TZ)
         lines.append(f"{i}. {_fmt_due(due)} - {escape(r['text'][:80])}")
     lines.append("ביטול: /remdel <מספר>")
-    await sendMessage(message, "\n".join(lines))
+    return "\n".join(lines)
 
 
 async def remdel_cmd(client, message):
@@ -665,16 +681,20 @@ async def rss_cmd(client, message):
         await editMessage(wait, "\n".join(lines))
 
     else:
-        if not feeds:
-            return await sendMessage(
-                message,
-                "אין פידים. הוספה: /rss add <קישור> [שם]\n"
+        await sendMessage(message, await _rss_list_text(feeds))
+
+
+async def _rss_list_text(feeds=None):
+    if feeds is None:
+        feeds = await drive_state.get("rss_feeds", [])
+    if not feeds:
+        return ("אין פידים. הוספה: /rss add <קישור> [שם]\n"
                 "פריטים חדשים נשלחים אוטומטית, בדיקה פעם בשעה.")
-        lines = ["📰 <b>פידים רשומים:</b>"]
-        for i, f in enumerate(feeds, 1):
-            lines.append(f"{i}. {escape(str(f['title']))}")
-        lines.append("<i>הוספה: /rss add · הסרה: /rss del · עכשיו: /rss now</i>")
-        await sendMessage(message, "\n".join(lines))
+    lines = ["📰 <b>פידים רשומים:</b>"]
+    for i, f in enumerate(feeds, 1):
+        lines.append(f"{i}. {escape(str(f['title']))}")
+    lines.append("<i>הוספה: /rss add · הסרה: /rss del · עכשיו: /rss now</i>")
+    return "\n".join(lines)
 
 
 async def _rss_check():
@@ -711,6 +731,10 @@ async def _rss_check():
 # ---------- state diagnostics ----------
 
 async def mystate_cmd(client, message):
+    await sendMessage(message, await _state_text())
+
+
+async def _state_text():
     st = await drive_state.status()
     notes = await drive_state.get("notes", [])
     tasks = await drive_state.get("tasks", [])
@@ -725,8 +749,7 @@ async def mystate_cmd(client, message):
         persist = "⚠️ זיכרון בלבד - הנתונים נמחקים באתחול"
     city_id = await drive_state.get("shabbat_city", _DEFAULT_CITY)
     city_name = next((k for k, v in _CITIES.items() if v == city_id), "ירושלים")
-    await sendMessage(
-        message,
+    return (
         "🔧 <b>מצב הבוט</b>\n"
         f"שמירה קבועה: {persist}\n"
         f"עיר לזמני שבת: {escape(city_name)}\n"
