@@ -62,6 +62,17 @@ async def _json(url, params=None, timeout=_HTTP):
             return await r.json(content_type=None)
 
 
+async def _need_storage(message):
+    st = await drive_state.status()
+    if st.get("persist"):
+        return True
+    await sendMessage(
+        message,
+        "🔒 היכולת הזו שומרת מידע לאורך זמן, והאחסון הקבוע עוד לא אומת מול החשבון שלך, "
+        "לכן היא כבויה זמנית כדי שלא יאבד מידע. נעדכן ברגע שתופעל.")
+    return False
+
+
 async def _notify(text):
     try:
         await bot.send_message(OWNER_ID, text, disable_web_page_preview=True)
@@ -332,6 +343,8 @@ async def qr_cmd(client, message):
 # ---------- notes / tasks / reminders ----------
 
 async def note_cmd(client, message):
+    if not await _need_storage(message):
+        return
     text = message.text.split(maxsplit=1)[1].strip() if len(message.command) > 1 or " " in message.text else ""
     if not text:
         return await sendMessage(message, "פורמט: /note <טקסט הפתק>")
@@ -343,6 +356,8 @@ async def note_cmd(client, message):
 
 
 async def notes_cmd(client, message):
+    if not await _need_storage(message):
+        return
     notes = await drive_state.get("notes", [])
     if not notes:
         return await sendMessage(message, "אין פתקים שמורים. /note להוספה.")
@@ -356,6 +371,8 @@ async def notes_cmd(client, message):
 
 
 async def notedel_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     notes = list(await drive_state.get("notes", []))
     if not args or not args[0].isdigit() or not (1 <= int(args[0]) <= len(notes)):
@@ -374,6 +391,8 @@ async def notedel_cmd(client, message):
 
 
 async def task_cmd(client, message):
+    if not await _need_storage(message):
+        return
     text = message.text.split(maxsplit=1)[1].strip() if " " in message.text else ""
     if not text:
         return await sendMessage(message, "פורמט: /task <משימה חדשה>")
@@ -397,6 +416,8 @@ def _task_lines(tasks, show_done=False):
 
 
 async def tasks_cmd(client, message):
+    if not await _need_storage(message):
+        return
     await sendMessage(message, await _tasks_text())
 
 
@@ -413,6 +434,8 @@ async def _tasks_text():
 
 
 async def done_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     tasks = list(await drive_state.get("tasks", []))
     if not args or not args[0].isdigit() or not (1 <= int(args[0]) <= len(tasks)):
@@ -424,6 +447,8 @@ async def done_cmd(client, message):
 
 
 async def taskdel_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     tasks = list(await drive_state.get("tasks", []))
     if not args or not args[0].isdigit() or not (1 <= int(args[0]) <= len(tasks)):
@@ -510,6 +535,8 @@ def _fmt_due(due):
 
 
 async def remind_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     if not args:
         return await sendMessage(
@@ -537,6 +564,8 @@ async def remind_cmd(client, message):
 
 
 async def reminders_cmd(client, message):
+    if not await _need_storage(message):
+        return
     await sendMessage(message, await _reminders_text())
 
 
@@ -555,6 +584,8 @@ async def _reminders_text():
 
 
 async def remdel_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     rems = list(await drive_state.get("reminders", []))
     if not args or not args[0].isdigit() or not (1 <= int(args[0]) <= len(rems)):
@@ -573,6 +604,8 @@ async def remdel_cmd(client, message):
 
 
 async def _fire_due_reminders():
+    if not drive_state.persist_ok():
+        return
     rems = list(await drive_state.get("reminders", []))
     now = int(time())
     due = [r for r in rems if r["due"] <= now]
@@ -598,7 +631,9 @@ async def _boot_catchup():
                 lines.append(f"• ({_fmt_due(due)}) {escape(r['text'])}")
             await _notify("\n".join(lines))
         st = await drive_state.status()
-        LOGGER.info(f"extras boot: drive={st['available']} account={st['account']}")
+        LOGGER.info(f"extras boot: drive={st['available']} account={st['account']} persist={st.get('persist')}")
+        if not st.get("persist"):
+            await _notify("🔧 הבוט הופעל. לוח, כלים וניהול ימות זמינים; פתקים/משימות/תזכורות/RSS כבויים זמנית עד אימות האחסון הקבוע.")
     except Exception as e:
         LOGGER.error(f"extras boot catchup: {e}")
 
@@ -618,6 +653,8 @@ def _entry_id(e):
 
 
 async def rss_cmd(client, message):
+    if not await _need_storage(message):
+        return
     args = message.command[1:]
     sub = args[0].lower() if args else "list"
     feeds = list(await drive_state.get("rss_feeds", []))
@@ -698,6 +735,8 @@ async def _rss_list_text(feeds=None):
 
 
 async def _rss_check():
+    if not drive_state.persist_ok():
+        return
     feeds = list(await drive_state.get("rss_feeds", []))
     if not feeds:
         return
@@ -743,10 +782,12 @@ async def _state_text():
     open_tasks = sum(1 for t in tasks if not t.get("done"))
     now = int(time())
     active_rems = sum(1 for r in rems if r["due"] > now)
-    if st["available"]:
+    if st.get("persist"):
         persist = f"✅ Drive ({escape(st['account'] or '?')})"
+    elif st["available"]:
+        persist = f"🔒 נעול עד אימות חשבון ({escape(st['account'] or '?')})"
     else:
-        persist = "⚠️ זיכרון בלבד - הנתונים נמחקים באתחול"
+        persist = "🔒 כבוי - אין חיבור אחסון"
     city_id = await drive_state.get("shabbat_city", _DEFAULT_CITY)
     city_name = next((k for k, v in _CITIES.items() if v == city_id), "ירושלים")
     return (

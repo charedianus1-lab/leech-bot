@@ -8,9 +8,16 @@
 # reports available=False, so features still work until the next restart.
 import asyncio
 from json import dumps, loads
-from os import path as ospath
+from os import path as ospath, environ
 
 from bot import config_dict, LOGGER
+
+# Storage is only trusted after the Drive account email is confirmed to be
+# one of the owner's own accounts. DRIVE_ALLOWED_EMAILS = comma list, set in
+# the deploy env after the first run reports the actual account. Until then
+# no state file is created or written - private data stays off unverified
+# storage and stateful features report themselves as temporarily disabled.
+_ALLOWED = {e.strip().lower() for e in environ.get("DRIVE_ALLOWED_EMAILS", "").split(",") if e.strip()}
 
 _FILE_NAME = "linked123_state.json"
 _lock = asyncio.Lock()
@@ -108,19 +115,26 @@ async def _ensure():
     return _available
 
 
+def persist_ok():
+    return bool(_available and _account and _account.lower() in _ALLOWED)
+
+
 async def load():
     global _state
     async with _lock:
         if _state is not None:
             return _state
-        if await _ensure():
+        if await _ensure() and persist_ok():
             try:
                 fid = await asyncio.to_thread(_find_or_create, _drive)
                 _state = await asyncio.to_thread(_read_file, _drive, fid)
+                LOGGER.info(f"drive_state: loaded state from verified account {_account}")
             except Exception as e:
                 LOGGER.error(f"drive_state: load failed: {e}")
                 _state = {}
         else:
+            if _available:
+                LOGGER.warning(f"drive_state: Drive account {_account} not in DRIVE_ALLOWED_EMAILS - persistence locked")
             _state = {}
         return _state
 
@@ -129,7 +143,7 @@ async def save():
     async with _lock:
         if _state is None:
             return False
-        if not await _ensure():
+        if not await _ensure() or not persist_ok():
             return False
         try:
             fid = await asyncio.to_thread(_find_or_create, _drive)
@@ -156,4 +170,5 @@ async def status():
     return {
         "available": _available,
         "account": _account,
+        "persist": persist_ok(),
     }
